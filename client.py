@@ -50,7 +50,7 @@ def client_program():
         while True:
             rdata = client_socket.recv(1024)
             print(rdata)
-            data = AES_Decrypt(pub_client_key, rdata)
+            data = RSADecrypt(pub_client_key, rdata)
             print('Received from user1 : ' + data)
             if (data == "bye"):
                 break
