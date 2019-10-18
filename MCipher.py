@@ -32,12 +32,10 @@ def readPEM(filename):
 
 #암호화
 def RSAEncrypt(pubKey, data):
-    encryptor = PKCS1_OAEP.new(pubKey)
-    encrypted = encryptor.encrypt(data.encode())
+    encrypted = pubKey.encrypt(data.encode())
     return encrypted
 
 #복호화
 def RSADecrypt(priKey, data):
-    decryptor = PKCS1_OAEP.new(priKey)
-    decrypted = decryptor.decrypt(data).decode()
+    decrypted = priKey.decrypt(data).decode()
     return decrypted
