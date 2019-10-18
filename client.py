@@ -15,25 +15,46 @@ def client_program():
         key = client_socket.recv(1024).decode()
         print('key : ' + key)
         client_socket.send('key exchange Success'.encode())
-        iv = client_socket.recv(1024).decode()
-        print('iv : ' + iv)
-        client_socket.send('iv exchange Success'.encode())
+
+        # symmetric key
+        # iv = client_socket.recv(1024).decode()
+        # print('iv : ' + iv)
+        # client_socket.send('iv exchange Success'.encode())
+
         keyRecive = True
-        cipher_encrypt = setAES(key, iv)
-        cipher_decrypt = setAES(key, iv)
+
+        # symmetirc key
+        # cipher_encrypt = setAES(key, iv)
+        # cipher_decrypt = setAES(key, iv)
+
+        # private/public key
+        key = "clientPriKey.pem"
+        pub_client_key = readPEM(key)
 
     if(keyRecive):
-        message = input(" -> ")
-        while message.lower().strip() != 'bye':
-            message = AES_Encrypt(cipher_encrypt,message)
-            print(message)
-            client_socket.send(message)
-            data = client_socket.recv(1024)
-            print(data)
-            data = AES_Decrypt(cipher_decrypt,data)
-            print('Received from user1 : ' + data)
 
-            message = input(" -> ")
+        # symmetric key
+        # message = input(" -> ")
+        # while message.lower().strip() != 'bye':
+        #     message = AES_Encrypt(cipher_encrypt,message)
+        #     print(message)
+        #     client_socket.send(message)
+        #     data = client_socket.recv(1024)
+        #     print(data)
+        #     data = client_socket.recv(1024)
+        #     data = AES_Decrypt(pub_client_key,data)
+        #     print('Received from user1 : ' + data)
+        #
+        #     message = input(" -> ")
+
+        while True:
+            rdata = client_socket.recv(1024)
+            print(rdata)
+            data = AES_Decrypt(pub_client_key, rdata)
+            print('Received from user1 : ' + data)
+            if (data == "bye"):
+                break
+
     client_socket.close()
 
 if __name__== '__main__':
