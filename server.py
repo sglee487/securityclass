@@ -55,9 +55,17 @@ def server_program():
         # symmetric key
         # data = AES_Encrypt(cipher_encrypt,rdata)
 
-        data = RSAEncrypt(pub_client_key, rdata)
+        # private/public key
+        # data = RSAEncrypt(pub_client_key, rdata)
+        # print(data)
+        # conn.send(data)
+
+        # sha256
+        hashBlock = makeHashBlock(rdata)
+        data = RSAEncrypt(pub_client_key, hashBlock)
         print(data)
         conn.send(data)
+
         if (rdata == "bye"):
             break
 

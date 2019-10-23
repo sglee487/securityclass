@@ -50,8 +50,17 @@ def client_program():
         while True:
             rdata = client_socket.recv(1024)
             print(rdata)
-            data = RSADecrypt(pub_client_key, rdata)
-            print('Received from user1 : ' + data)
+
+            # private/public key
+            # data = RSADecrypt(pub_client_key, rdata)
+            # print('Received from user1 : ' + data)
+
+            # sha256
+            hashBlock = RSADecrypt(pub_client_key,rdata)
+            data, hashData = separateHashBlock(hashBlock)
+            print("integrityCheck : " + str(integrityCheck(data,hashData)))
+            print(data)
+
             if (data == "bye"):
                 break
 

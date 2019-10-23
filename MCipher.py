@@ -1,6 +1,7 @@
 from Crypto.Cipher import AES
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
+import hashlib
 
 BS = 16
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
@@ -39,3 +40,25 @@ def RSAEncrypt(pubKey, data):
 def RSADecrypt(priKey, data):
     decrypted = priKey.decrypt(data).decode()
     return decrypted
+
+#해시
+def sha256(data):
+    return hashlib.sha256(data.encode()).hexdigest()
+
+#해시블록 생성
+def makeHashBlock(data):
+    hashdata = hashlib.sha256(data.encode()).hexdigest()
+    hashBlock = '{0:04x}'.format(len(data)) + data + '{0:04x}'.format(len(hashdata)) + hashdata
+    return hashBlock
+
+#해시블록 분리
+def separateHashBlock(hashBlock):
+    data_size = int(hashBlock[:4], 16)
+    data = hashBlock[4: data_size + 4]
+    hashData_size = int(hashBlock[data_size+4:data_size+8],16)
+    hashData = hashBlock[data_size+8:data_size+8+hashData_size]
+    return data,hashData
+
+#무결성 검사
+def integrityCheck(data, hashData):
+    return (hashlib.sha256(data.encode()).hexdigest()) == hashData
