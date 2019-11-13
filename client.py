@@ -80,6 +80,17 @@ def client_program():
             if (data == "bye"):
                 break
 
+            rdata = input( '-> ')
+            data = RSAEncrypt(serverSignPubKey, rdata)
+            client_socket.send(data)
+
+            hasher = SHA256.new(rdata.encode())
+            signature = sign(clientSignPriKey_for_sign,hasher)
+            client_socket.send(signature)
+
+            if (rdata == "bye"):
+                break
+
     client_socket.close()
 
 if __name__== '__main__':

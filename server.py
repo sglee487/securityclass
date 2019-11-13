@@ -24,6 +24,7 @@ def server_program():
     clientSignPubKey = readPEM("clientSignPubKey.pem")
     serverSignPriKey = readPEM("serverSignPriKey.pem")
     serverSignPriKey_for_sign = readPEM_for_signverify("serverSignPriKey.pem")
+    clientSignPubKey_for_sign = readPEM_for_signverify("clientSignPubKey.pem")
 
     server_socket = socket.socket()
     server_socket.bind((host,port))
@@ -89,6 +90,19 @@ def server_program():
 
         if (rdata == "bye"):
             break
+
+        rdata = conn.recv(1024)
+        if not rdata:
+            break
+        data = RSADecrypt(serverSignPriKey, rdata)
+        print("Recieved from user2 : " + str(data))
+        signmessage = conn.recv(1024)
+
+        verify(clientSignPubKey_for_sign,data.encode(),signmessage)
+
+        if (data == "bye"):
+            break
+
 
     conn.close()
 
