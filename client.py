@@ -28,8 +28,14 @@ def client_program():
         # cipher_decrypt = setAES(key, iv)
 
         # private/public key
-        key = "clientPriKey.pem"
-        pub_client_key = readPEM(key)
+        # key = "clientPriKey.pem"
+        # pub_client_key = readPEM(key)
+
+        # sign verify
+        serverSignPubKey = readPEM("serverSignPubKey.pem")
+        clientSignPriKey = readPEM("clientSignPriKey.pem")
+        clientSignPriKey_for_sign = readPEM_for_signverify("clientSignPriKey.pem")
+        serverSignPubKey_for_sign = readPEM_for_signverify("serverSignPubKey.pem")
 
     if(keyRecive):
 
@@ -49,17 +55,27 @@ def client_program():
 
         while True:
             rdata = client_socket.recv(1024)
-            print(rdata)
+            # print(rdata)
 
             # private/public key
             # data = RSADecrypt(pub_client_key, rdata)
             # print('Received from user1 : ' + data)
 
             # sha256
-            hashBlock = RSADecrypt(pub_client_key,rdata)
-            data, hashData = separateHashBlock(hashBlock)
-            print("integrityCheck : " + str(integrityCheck(data,hashData)))
-            print(data)
+            # hashBlock = RSADecrypt(pub_client_key,rdata)
+            # data, hashData = separateHashBlock(hashBlock)
+            # print("integrityCheck : " + str(integrityCheck(data,hashData)))
+            # print(data)
+
+            # sign verify
+            data = RSADecrypt(clientSignPriKey, rdata)
+            print('Received from user1 : ' + data)
+            # print(data)
+
+            signmessage = client_socket.recv(1024)
+            # print(signmessage)
+
+            verify(serverSignPubKey_for_sign,data.encode(),signmessage)
 
             if (data == "bye"):
                 break

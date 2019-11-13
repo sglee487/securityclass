@@ -2,6 +2,9 @@ from Crypto.Cipher import AES
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
 import hashlib
+from Crypto.Hash import SHA256
+from Crypto.Signature import PKCS1_v1_5
+
 
 BS = 16
 pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
@@ -30,6 +33,13 @@ def readPEM(filename):
     f.close()
     pkcs1_oaep = PKCS1_OAEP.new(key)
     return pkcs1_oaep
+
+#키 읽기 서명을 위한
+def readPEM_for_signverify(filename):
+    f = open(filename, "r")
+    key = RSA.importKey(f.read())
+    f.close()
+    return key
 
 #암호화
 def RSAEncrypt(pubKey, data):
@@ -62,3 +72,18 @@ def separateHashBlock(hashBlock):
 #무결성 검사
 def integrityCheck(data, hashData):
     return (hashlib.sha256(data.encode()).hexdigest()) == hashData
+
+#사인
+def sign(priKey, hashData):
+    signer = PKCS1_v1_5.new(priKey)
+    signature = signer.sign(hashData)
+    return signature
+
+#검증
+def verify(pubKey, message, signData):
+    hasher = SHA256.new(message)
+    verifier = PKCS1_v1_5.new(pubKey)
+    if verifier.verify(hasher, signData):
+        print('it is true message')
+    else:
+        print('no!')

@@ -18,7 +18,12 @@ def server_program():
     # cipher_decrypt = setAES(key, iv)
 
     # private/public key
-    pub_client_key = readPEM(key)
+    # pub_client_key = readPEM(key)
+
+    # sign verify
+    clientSignPubKey = readPEM("clientSignPubKey.pem")
+    serverSignPriKey = readPEM("serverSignPriKey.pem")
+    serverSignPriKey_for_sign = readPEM_for_signverify("serverSignPriKey.pem")
 
     server_socket = socket.socket()
     server_socket.bind((host,port))
@@ -32,12 +37,18 @@ def server_program():
     # print(conn.recv(1024).decode())
 
     # private/pubilc key
+    # server_socket.listen(2)
+    # conn, address = server_socket.accept()
+    # conn.send(key.encode())
+    # print(conn.recv(1024).decode())
+    # conn.send(iv.encode())
+    # print(conn.recv(1024).decode())
+
+    # sign verify
     server_socket.listen(2)
     conn, address = server_socket.accept()
     conn.send(key.encode())
     print(conn.recv(1024).decode())
-    # conn.send(iv.encode())
-    # print(conn.recv(1024).decode())
 
     print("Connection from: " + str(address))
 
@@ -61,10 +72,20 @@ def server_program():
         # conn.send(data)
 
         # sha256
-        hashBlock = makeHashBlock(rdata)
-        data = RSAEncrypt(pub_client_key, hashBlock)
-        print(data)
+        # hashBlock = makeHashBlock(rdata)
+        # data = RSAEncrypt(pub_client_key, hashBlock)
+        # print(data)
+        # conn.send(data)
+
+        # sign verify
+        data = RSAEncrypt(clientSignPubKey, rdata)
+        # print(data)
         conn.send(data)
+
+        hasher = SHA256.new(rdata.encode())
+        signature = sign(serverSignPriKey_for_sign, hasher)
+        # print(signature)
+        conn.send(signature)
 
         if (rdata == "bye"):
             break
